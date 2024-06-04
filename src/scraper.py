@@ -1,18 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
+from typing import List, Dict
 
 class Scraper:
   def __init__(self):
     self.soup = None
     self.url = None
     self.content = None
+    self.tables = Dict
     
   def set_url(self, url: str) -> None:
     if not url:
       raise Exception('No url found')
     self.url = url
     
-  def get_page_content(self):
+  def get_page_content(self) -> None:
     if not self.url:
       raise ('No URL found')
     try:
@@ -32,11 +34,12 @@ class Scraper:
     except Exception as e:
       print(f'Error while parsing page: {e}')
       
-  def get_ratings(self):
+  def set_tables(self) -> None:
+    self.tables = self.soup.find_all('table')
+      
+  def get_ratings(self) -> List:
     ratings = []
-    tables = self.soup.find_all('table')
-    ratings_table = tables[2]
-    # ratings_header = ratings_table.find('thead')
+    ratings_table = self.tables[2]
     ratings_body = ratings_table.find('tbody')
     rows = ratings_body.find_all('tr')
     for row in rows:
@@ -44,3 +47,14 @@ class Scraper:
       cols = [ele.text.strip() for ele in cols]
       ratings.append([ele for ele in cols if ele])
     return ratings
+  
+  def get_matches(self) -> List:
+    matches = []
+    matches_table = self.tables[3]
+    matches_body = matches_table.find('tbody')
+    rows = matches_body.find_all('tr')
+    for row in rows:
+      cols = row.find_all('td')
+      cols = [ele.text.strip() for ele in cols]
+      matches.append([ele for ele in cols if ele])
+    return matches
