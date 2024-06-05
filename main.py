@@ -1,19 +1,22 @@
 from src.scraper import Scraper
 from src.wavu import Wavu
 
-test = Scraper()
+scraper = Scraper()
 player = Wavu()
-test.set_url('https://wank.wavu.wiki/player/2FgyEG6H5NDr')
-test.get_page_content()
-test.parse_page()
-test.set_tables()
+scraper.set_url('https://wank.wavu.wiki/player/2FgyEG6H5NDr')
+scraper.get_page_content()
+scraper.parse_page()
+scraper.set_tables()
 
-ratings = test.get_ratings()
-matches = test.get_matches()
+ratings = scraper.get_ratings()
+matches = scraper.get_matches()
+info = scraper.get_player_info()
+
+player.set_player_info(info)
 player.set_matches(matches)
-totals = player.get_total_results()
-# print(totals)
-# print(player.current_char)
-# player.set_ratings(ratings)
+player.set_ratings(ratings)
 # player.set_chars()
-print (player.get_total_chars())
+totals = player.get_total_results()
+total_chars = player.get_total_chars()
+
+print(total_chars)
