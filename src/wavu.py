@@ -3,7 +3,7 @@ import pandas as pd
 
 class Wavu:
   def __init__(self):
-    self.player_info: List[str] = []
+    self.player_info: Dict = {}
     self.chars: List[str] = []
     self.current_char: str = ''
     self.ratings: List = []
@@ -20,7 +20,7 @@ class Wavu:
     self.current_char = char
     
   def set_player_info(self, info: List) -> None:
-    self.info = info
+    self.player_info = info
     
   def set_chars(self) -> None:
     if not self.ratings:
@@ -53,15 +53,15 @@ class Wavu:
       else:
         draws += 1
         
-      total = wins + defeats + draws
-      percentages = {
-            'wins': wins / total * 100 if total else 0,
-            'defeats': defeats / total * 100 if total else 0,
-            'draws': draws / total * 100 if total else 0
-        }
-      return {key: {'total': value, 'percentage': "{:.2f}".format(percentage)} for key, value, percentage in zip(percentages.keys(), (wins, defeats, draws), percentages.values())}
+    total = wins + defeats + draws
+    percentages = {
+          'wins': wins / total * 100 if total else 0,
+          'defeats': defeats / total * 100 if total else 0,
+          'draws': draws / total * 100 if total else 0
+      }
+    return {key: {'total': value, 'percentage': "{:.2f}".format(percentage)} for key, value, percentage in zip(percentages.keys(), (wins, defeats, draws), percentages.values())}
     
-  def get_total_chars(self) -> str:
+  def get_total_chars(self) -> Dict:
     if not self.matches:
       return '[]'
     df = pd.DataFrame(self.matches, columns=['When', 'Score', 'Rating', 'Opponent', 'Opp. char', 'Opp. rating'])
@@ -75,7 +75,8 @@ class Wavu:
             results[col] = 0
     
     results['matches'] = results[['WIN', 'LOSE', 'DRAW']].sum(axis=1)
-    
+    win_percentage = results['WIN'] / results['matches'] * 100
+    results['win_percentage'] = win_percentage.round(2)
     rounds_won = df.groupby('character')['rounds_won'].sum().reset_index()
     rounds_lost = df.groupby('character')['rounds_lost'].sum().reset_index()
     
@@ -83,13 +84,18 @@ class Wavu:
     results = pd.merge(results, rounds_lost, on='character', how='left')
     results.fillna(0, inplace=True)
     results = results.sort_values(by=['matches'], ascending=False)
-    chars = results.to_json(orient='records')
+    chars = results.to_dict(orient='records')
     return chars
   
-  def get_player_info(self) -> List:
+  def get_player_info(self) -> Dict:
     if not self.player_info:
-      return '[]'
-    return self.player_info
+      return {}
+    info = {
+      'tekken_id': self.player_info[0][0],
+      'region': self.player_info[2][0],
+      'platform': self.player_info[3][0]
+    }
+    return info
   
   def get_top_head(self) -> List:
     if not self.heads:

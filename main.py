@@ -1,9 +1,9 @@
 from src.scraper import Scraper
 from src.wavu import Wavu
 
-scraper = Scraper()
+scraper = Scraper('2FgyEG6H5NDr')
 player = Wavu()
-scraper.set_url('2FgyEG6H5NDr', 'jack')
+scraper.set_url()
 scraper.get_page_content()
 scraper.parse_page()
 scraper.set_tables()
@@ -21,5 +21,6 @@ player.set_chars()
 totals = player.get_total_results()
 total_chars = player.get_total_chars()
 total_heads = player.get_top_head()
+player_info = player.get_player_info()
 
-print(player.chars)
+print(total_chars)

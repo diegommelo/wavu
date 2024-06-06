@@ -3,20 +3,17 @@ from bs4 import BeautifulSoup, Tag
 from typing import List, Dict
 
 class Scraper:
-  def __init__(self):
+  def __init__(self, player_id: str):
     self.soup = None
     self.url = 'https://wank.wavu.wiki/player/'
-    self.player_id: str = ''
+    self.player_id = player_id
     self.char: str = ''
     self.content = None
     self.tables: Dict = {}
     
-  def set_url(self, player_id: str, char: str = '') -> None:
-    if not player_id:
+  def set_url(self) -> None:
+    if not self.player_id:
       raise ValueError('Player_id not found')
-    
-    self.player_id = player_id
-    self.char = char
     self.url = self.url + self.player_id
     if self.char:
       self.url = self.url + '/' + self.char
@@ -101,6 +98,7 @@ class Scraper:
     for head in heads:
       head[0] = head[0].strip("\n (h2h)")
     return heads
+  
     
   def extract_rows(self, table: Tag, tbody: bool = True) -> List:
     data = []
