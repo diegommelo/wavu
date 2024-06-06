@@ -8,17 +8,18 @@ class Wavu:
     self.current_char: str = ''
     self.ratings: List = []
     self.matches: List = []
+    self.heads: List = []
     
-  def set_ratings(self, ratings) -> None:
+  def set_ratings(self, ratings: List) -> None:
     self.ratings = ratings
     
-  def set_matches(self, matches) -> None:
+  def set_matches(self, matches: List) -> None:
     self.matches = matches
     
-  def set_current_char(self, char) -> None:
+  def set_current_char(self, char: List) -> None:
     self.current_char = char
     
-  def set_player_info(self, info) -> None:
+  def set_player_info(self, info: List) -> None:
     self.info = info
     
   def set_chars(self) -> None:
@@ -26,6 +27,9 @@ class Wavu:
       raise ValueError('No ratings found')
     self.chars = [row[0] for row in self.ratings]
     self.current_char = self.chars[0]
+  
+  def set_head_to_head(self, heads: List) -> None:
+    self.heads = heads
 
   def get_total_games(self) -> int:
     if not self.ratings:
@@ -78,12 +82,17 @@ class Wavu:
     results = pd.merge(results, rounds_won, on='character', how='left')
     results = pd.merge(results, rounds_lost, on='character', how='left')
     results.fillna(0, inplace=True)
-    
+    results = results.sort_values(by=['matches'], ascending=False)
     chars = results.to_json(orient='records')
-
     return chars
   
   def get_player_info(self) -> List:
     if not self.player_info:
       return '[]'
     return self.player_info
+  
+  def get_top_head(self) -> List:
+    if not self.heads:
+      return '[]'
+    return self.heads[:5]
+  

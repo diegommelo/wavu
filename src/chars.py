@@ -1,11 +1,11 @@
 from enum import Enum
 
-class Char(Enum):
-  KUMA = 'kuma'
-  PANDA = 'panda'
-  VICTOR = 'victor'
-  EDDY = 'eddy'
-  JACK = 'jack'
-  ALISE = 'alisa'
-  AZUCENA = 'azu'
-  LILI = 'lili'
+class Char(str, Enum):
+  Kuma = 'kuma'
+  Panda = 'panda'
+  Victor = 'victor'
+  Eddy = 'eddy'
+  Jack = 'jack'
+  Alisa = 'alisa'
+  Azucena = 'azu'
+  Lili = 'lili'
