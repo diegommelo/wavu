@@ -1,0 +1,47 @@
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<div id="app">
+  <div class="Wavu-Search">
+    <input 
+      type="search" 
+      placeholder="Put your tekken id here" 
+      v-model="search"
+    />
+  <button @click="getPlayerData">Search</button>
+  </div>
+  <div class="Wavu-Page">
+    {{ data }}
+  </div>
+</div>
+
+<script>
+  const { createApp } = Vue
+
+  createApp({
+    data() {
+      return {
+        message: 'Hello Vue!',
+        data: {},
+        search: '',
+      }
+    },
+    methods: {
+      async getPlayerData() {
+        const response = await fetch (`/api/player/${this.search}`)
+        this.data = await response.json()
+      }
+    },
+  }).mount('#app')
+</script>
+
+<style>
+body {
+  background-color: darkslategray;
+}
+#app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+</style>

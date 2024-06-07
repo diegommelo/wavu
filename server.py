@@ -1,15 +1,19 @@
 from fastapi import FastAPI, Query, Depends
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from typing import Annotated
 from src.scraper import Scraper
 from src.wavu import Wavu
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/")
 async def root():
-    return {"message": "There's nothing to see here"}
+    return FileResponse("static/index.html")
   
-@app.get("/player/{player_id}")
+@app.get("/api/player/{player_id}")
 async def get_player(scraper: Annotated[Scraper, Depends()], c: Annotated[str | None, Query(min_length=3, max_length=10)] = None):
   response = {}
   wavu = Wavu()
@@ -35,8 +39,7 @@ async def get_player(scraper: Annotated[Scraper, Depends()], c: Annotated[str | 
   total_chars = wavu.get_total_chars()
   head_to_head = wavu.get_top_head()
   current_char = scraper.char
-  
-  
+   
   response = {
     'char': current_char,
     'player_info': player_info,
@@ -45,4 +48,4 @@ async def get_player(scraper: Annotated[Scraper, Depends()], c: Annotated[str | 
     'head_to_head': head_to_head
   }
   return response
-  
+

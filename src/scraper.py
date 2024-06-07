@@ -1,4 +1,4 @@
-import requests
+import httpx
 from bs4 import BeautifulSoup, Tag
 from typing import List, Dict
 
