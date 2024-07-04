@@ -1,3 +1,4 @@
+# import requests
 import httpx
 from bs4 import BeautifulSoup, Tag
 from typing import List, Dict
@@ -38,19 +39,32 @@ class Scraper:
       self.soup = BeautifulSoup(self.content, 'html.parser')
     except Exception as e:
       print(f'Error while parsing page: {e}')
-      
-  def get_page_content(self) -> None:
-    if not self.url:
-      raise ('No URL found')
-    try:
-      page = requests.get(self.url)
-      if page.status_code == 200:
-        self.content = page.content
-      else:
-        return None
-    except Exception as e:
-      print(f'Error while gettint page: {e}')
-      
+  
+  async def get_page_content(self) -> None:
+      if not self.url:
+          raise ('No URL found')
+      try:
+          async with httpx.AsyncClient() as client:
+              response = await client.get(self.url)
+              if response.status_code == 200:
+                  self.content = response.content
+              else:
+                  return None
+      except Exception as e:
+          print(f'Error while getting page: {e}')  
+          
+  def setup(self) -> None:
+    self.parse_page()
+    self.set_tables()
+    return None
+  
+  def set_default_char(self) -> None:
+    table = self.tables[2]
+    body = table.find('tbody')
+    tr = body.find('tr')
+    char = tr.find_all('td')[0].text.strip()
+    self.set_char(char)
+    
   def get_ratings(self) -> List:
     if not self.tables:
       raise ValueError('No tables found')
@@ -99,8 +113,21 @@ class Scraper:
       head[0] = head[0].strip("\n (h2h)")
     return heads
   
-    
+
   def extract_rows(self, table: Tag, tbody: bool = True) -> List:
+    """
+    Extracts rows from a given HTML table.
+
+    Args:
+      table (Tag): The HTML table element to extract rows from.
+      tbody (bool, optional): Specifies whether to look for rows within the 'tbody' element. 
+                  Defaults to True.
+
+    Returns:
+      List: A list of lists, where each inner list represents a row in the table.
+          The inner lists contain the text content of each cell in the row.
+
+    """
     data = []
     if tbody:
       body = table.find('tbody')

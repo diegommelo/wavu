@@ -98,7 +98,33 @@ class Wavu:
     return info
   
   def get_top_head(self) -> List:
+    """
+    Returns the top 5 elements from the `heads` list.
+    If the `heads` list is empty, it returns an empty list.
+
+    Returns:
+      List: The top 5 elements from the `heads` list.
+    """
     if not self.heads:
-      return '[]'
+      return []
     return self.heads[:5]
   
+  def get_last_matches(self) -> List:
+    if not self.matches:
+      return {}
+    last_matches = self.matches[:25]
+    df = pd.DataFrame(last_matches, columns=['date', 'score', 'rating', 'opponent', 'opponent_char', 'opponent_rating'])
+    columns_to_sanitize = ['rating', 'opponent', 'opponent_rating']
+    for col in columns_to_sanitize:
+      df[col] = df[col].str.replace(r'\s+', ' ', regex=True)
+      df[col] = df[col].str.replace(r'\n+', ' ', regex=True)
+      df[col] = df[col].str.replace(r'\(h2h\)', ' ', regex=True)
+      df[col] = df[col].str.strip()
+    df['result'] = df['score'].str.extract(r'(\w+)$')
+    df['score'] = df['score'].str.extract(r'(\d+-\d+)')
+    df['rating'] = df['rating'].str.extract(r'(\d+\s+[+-]\d+)')
+    # results = df.pivot_table(index='character', columns='result', aggfunc='size', fill_value=0).reset_index()
+    # response = results.to_dict(orient='records')
+    response = df.to_dict(orient='records')
+    print(df)
+    return response

@@ -20,9 +20,12 @@ async def get_player(scraper: Annotated[Scraper, Depends()], c: Annotated[str | 
   if c:
     scraper.set_char(c)
   scraper.set_url()
-  scraper.get_page_content()
+  # await scraper.setup()
+  await scraper.get_page_content()
   scraper.parse_page()
   scraper.set_tables()
+  if not scraper.char:
+    scraper.set_default_char()
   
   info = scraper.get_player_info()
   matches = scraper.get_matches()
@@ -38,14 +41,17 @@ async def get_player(scraper: Annotated[Scraper, Depends()], c: Annotated[str | 
   total_results = wavu.get_total_results()
   total_chars = wavu.get_total_chars()
   head_to_head = wavu.get_top_head()
+  last_matches = wavu.get_last_matches()
   current_char = scraper.char
    
   response = {
-    'char': current_char,
+    'current_char': current_char,
     'player_info': player_info,
-    'total_chars': total_chars,
-    'total_results': total_results,
-    'head_to_head': head_to_head
+    'opp_chars': total_chars,
+    'results': total_results,
+    'head_to_head': head_to_head,
+    'last_matches': last_matches
   }
   return response
+  # return scraper.content
 
